@@ -204,7 +204,6 @@
       1. How can I increase my loan limit?<br/>
       2. How do I repay?<br/>
       3. What happens if I delay?<br/>
-      00. Main Menu
     </div>
   </div>
 
@@ -263,12 +262,7 @@ function botReply(q){
   }
   return "Please choose an option: 0, 1, 2, or 3.";
 }
- if(s === "00"){
-    return "Main Menu:\n0. Why is my limit 0?\n1. How can I increase my loan limit?\n2. How do I repay?\n3. What happens if I delay?\n00. Main Menu";
-  }
-  
-  return "Please choose an option: 0, 1, 2, 3, or 00 for Main Menu.";
-}
+
 
 sendBtn.addEventListener('click',()=>{
   const v = input.value.trim(); if(!v) return;
