@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Taasi Pochi — Interactive Mockup</title>
+<style>
+  .chat-label {
+  position: absolute;
+  right: 18px;
+  bottom: 90px;
+  background: #0fa95a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.msg {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  clear: both;
+}
+
+.bot {
+  background: #e0f8ec;      /* light Safaricom green */
+  color: #073b26;           /* dark text */
+  float: left;              /* align left */
+  border-bottom-left-radius: 4px;
+}
+
+.user {
+  background: #ffffff;      /* white bubble */
+  color: #000;
+  float: right;             /* align right */
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.chat-window {
+  position: absolute;
+  right: 18px;
+  bottom: 92px;
+  width: 360px;
+  height: 520px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 28px 60px rgba(2,6,23,0.22);
+  display: none;
+  flex-direction: column;
+}
+
+.chat-window .body {
+  flex: 1;                 /* fill available space */
+  overflow-y: auto;        /* scroll messages if too many */
+  padding: 12px;
+  background: #f8fff6;
+}
+
+.chat-window .input {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid #eef6ee;
+  background: #fff;
+  flex-shrink: 0;          /* don’t shrink, stays at bottom */
+}
+
+
+  :root{
+    --bg:#f5f6f8;
+    --card:#ffffff;
+    --muted:#6b7280;
+    --green:#0fa95a;
+    --dark:#073b26;
+    --accent:#10b981;
+  }
+  *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; padding:0}
+  body{background:var(--bg);display:flex;align-items:center;justify-content:center;height:100vh;padding:18px}
+  .phone{width:380px;height:780px;border-radius:36px;background:linear-gradient(180deg,#fff,#fbfbfb);box-shadow:0 18px 60px rgba(2,6,23,0.18);overflow:hidden;position:relative}
+  /* Top bar */
+  .top{padding:18px 20px;background:transparent;display:flex;align-items:center;justify-content:space-between}
+  .title{font-weight:700;font-size:18px;color:#0b2a1a}
+  .dots{width:40px;height:28px;background:#f0f3f2;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#3b6;opacity:.9;font-weight:600}
+  /* Main content */
+  .screen{
+  padding:18px;
+  overflow:auto;
+  height:calc(100% - 76px);
+  padding-bottom:80px;
+}
+  .limit-card{background:var(--card);border-radius:18px;padding:18px;box-shadow:0 6px 18px rgba(2,6,23,0.06);display:flex;flex-direction:column;gap:12px}
+  .limit-row{display:flex;align-items:center;justify-content:space-between}
+  .label{color:var(--muted);font-size:13px}
+  .amount{font-size:22px;font-weight:800;color:var(--green)}
+  .small{font-size:12px;color:var(--muted)}
+
+  .btns{display:flex;gap:12px;margin-top:8px}
+  .btn{flex:1;padding:12px;border-radius:12px;text-align:center;font-weight:700;background:var(--green);color:white;cursor:pointer}
+  .btn.ghost{background:#e9fff1;color:var(--dark);font-weight:700;border:1px solid #dff6ea}
+
+  .mini{display:flex;gap:12px;margin-top:14px;align-items:center}
+  .mini .box{flex:1;background:var(--card);padding:10px;border-radius:12px;text-align:center;box-shadow:0 6px 18px rgba(2,6,23,0.04)}
+  .mini .box small{display:block;color:var(--muted);font-size:12px;margin-top:6px}
+
+  .statements{margin-top:16px}
+  .stmt{display:flex;justify-content:space-between;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fcfffb);margin-bottom:10px;align-items:center;box-shadow:0 6px 18px rgba(2,6,23,0.03)}
+  .stmt .left small{color:var(--muted);display:block}
+  .stmt .left b{display:block;margin-top:6px}
+  .stmt .right{color:var(--dark);font-weight:700}
+
+  .hint{margin-top:12px;color:var(--muted);font-size:13px}
+
+  /* Chatbot */
+  .chat-fab{position:absolute;right:18px;bottom:18px;width:64px;height:64px;border-radius:50%;background:linear-gradient(180deg,var(--accent),#00a07f);display:flex;align-items:center;justify-content:center;color:white;box-shadow:0 12px 34px rgba(2,6,23,0.18);cursor:pointer;border:4px solid rgba(255,255,255,0.6);z-index:40}
+  .chat-fab svg{width:28px;height:28px}
+  .chat-window{position:absolute;right:18px;bottom:92px;width:360px;height:520px;border-radius:16px;background:#fff;box-shadow:0 28px 60px rgba(2,6,23,0.22);overflow:hidden;display:none;flex-direction:column;z-index:50}
+  .chat-window .header{background:var(--green);color:white;padding:12px 14px;display:flex;align-items:center;justify-content:space-between}
+  .chat-window .body{padding:12px;flex:1;overflow:auto;background:#f8fff6}
+  .chat-window .msg{max-width:78%;padding:10px;border-radius:12px;margin-bottom:10px;display:inline-block}
+  .bot{background:#fff;border:1px solid #eef6ee}
+  .user{background:#dcfce7;margin-left:auto}
+  .chat-window .input{padding:10px;border-top:1px solid #eef6ee;display:flex;gap:8px}
+  .chat-window input{flex:1;padding:10px;border-radius:10px;border:1px solid #e8f6ee}
+  .chat-window button{background:var(--green);color:white;padding:10px 12px;border:none;border-radius:10px;cursor:pointer}
+
+  /* small responsive */
+  @media (max-width:420px){ .phone{transform:scale(.92)} .chat-window{width:92%;right:4%} }
+</style>
+</head>
+<body>
+<div class="phone" role="application" aria-label="Taasi Pochi mock">
+  <div class="top">
+    <div class="title">Taasi Pochi</div>
+    <div class="dots">••|🗙</div>
+  </div>
+
+  <div class="screen" id="screen">
+    <div class="limit-card" role="region" aria-label="loan limit">
+      <div class="limit-row">
+        <div>
+          <div class="label">Available Limit</div>
+          <div class="amount" id="limitAmount">Ksh 0</div>
+          <div class="small" id="leftAmount">Loan Balance: Ksh 0</div>
+        </div>
+        <div style="text-align:right">
+          <div class="label">Loan Period</div>
+          <div style="font-weight:800;color:var(--dark)" id="loanPeriod">7 Days</div>
+        </div>
+      </div>
+
+      <div class="btns">
+        <div class="btn" id="borrowBtn">Borrow</div>
+        <div class="btn ghost" id="moreBtn">More</div>
+      </div>
+    </div>
+
+<div class="mini">
+  <div class="box">
+    <strong>How Taasi Pochi works</strong>
+    <small>Tap the chat for help</small>
+  </div>
+</div>
+
+<div class="mini">
+  <div class="box">
+    <strong>My Statements</strong>
+    <small>No records available</small>
+  </div>
+</div>
+    <div style="text-align:center">
+    <div class="hint">Chat with LendiBot to know why your limit is 0.</div>
+  </div>
+
+  <!-- Chatbot FAB -->
+  <div class="chat-label">LendiBot</div>
+  <div class="chat-fab" id="chatFab" title="Chat with Taasi Bot" role="button" aria-label="Open Taasi Chatbot">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </div>
+
+  <!-- Chat Window -->
+<div class="chat-window" id="chatWindow" aria-hidden="true">
+  <div style="text-align:center"></div>
+  <div class="header">
+    <div>
+      <strong>Taasi Bot</strong>
+      <div style="font-size:12px;opacity:.95">How can I help?</div>
+    </div>
+    <div style="cursor:pointer" id="closeChat">✕</div>
+  </div>
+
+  <!-- Body holds only messages -->
+  <div class="body" id="chatBody">
+    <div class="msg bot">
+      Hi (NAME) — my name is LendiBot, your Loan query assistant.<br/>
+      Choose an option below:<br/>
+      0. Why is my limit 0?<br/>
+      1. How can I increase my loan limit?<br/>
+      2. How do I repay?<br/>
+      3. What happens if I delay?
+    </div>
+  </div>
+
+  <!-- Input should be outside the body -->
+  <div class="input">
+    <input id="chatInput" placeholder="Reply..."/>
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+
+<script>
+// Simple customization variables (edit these values to customize the mock)
+const MOCK_DATA = {
+  limit: 0,
+  balance: 0,
+  period: '7 Days'
+};
+
+document.getElementById('limitAmount').textContent = 'Ksh ' + MOCK_DATA.limit.toLocaleString();
+document.getElementById('leftAmount').textContent = 'Loan Balance: Ksh ' + MOCK_DATA.balance.toLocaleString();
+document.getElementById('loanPeriod').textContent = MOCK_DATA.period;
+
+// Chat interactions (same behavior as prior demo)
+const fab = document.getElementById('chatFab');
+const win = document.getElementById('chatWindow');
+const closeBtn = document.getElementById('closeChat');
+const chatBody = document.getElementById('chatBody');
+const input = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+
+fab.addEventListener('click',()=>{ win.style.display='flex'; win.setAttribute('aria-hidden','false'); input.focus(); });
+closeBtn.addEventListener('click',()=>{ win.style.display='none'; win.setAttribute('aria-hidden','true'); });
+
+function append(text, who='bot'){
+  const el = document.createElement('div');
+  el.className = 'msg ' + (who==='bot'?'bot':'user');
+  el.textContent = text;
+  chatBody.appendChild(el);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function botReply(q){
+  const s = q.trim();
+  if(s === "0"){
+    return "Your limit is 0 because your Pochi activity is low or your account is new. Keep using it actively and repaying to build a score.";
+  }
+  if(s === "1"){
+    return "To increase your loan limit, repay on time, keep receiving payments on Pochi, and maintain regular activity.";
+  }
+  if(s === "2"){
+    return "Repayment is automatic from your Pochi wallet when funds are available, but you can also repay manually via the loans menu.";
+  }
+  if(s === "3"){
+    return "If you delay repayment, your access to future loans may be reduced, and penalties may apply. Early repayment builds your limit.";
+  }
+  return "Please choose an option: 0, 1, 2, or 3.";
+}
+
+
+sendBtn.addEventListener('click',()=>{
+  const v = input.value.trim(); if(!v) return;
+  append(v,'user'); input.value='';
+  setTimeout(()=>{ append(botReply(v),'bot'); },600);
+});
+input.addEventListener('keydown',(e)=>{ if(e.key==='Enter') sendBtn.click(); });
+
+// Borrow button demo alert
+document.getElementById('borrowBtn').addEventListener('click',()=>{
+  append("Opening borrow flow... (demo)","bot");
+  setTimeout(()=> append("You would be shown amount options and repayment details here.","bot"),600);
+});
+</script>
+</body>
+</html>
