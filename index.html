@@ -261,6 +261,9 @@ function botReply(q){
   if(s === "3"){
     return "If you delay repayment, your access to future loans may be reduced, and penalties may apply. Early repayment builds your limit.";
   }
+  if(s === "00"){
+    return "Main Menu:\n0. Why is my limit 0?\n1. How can I increase my loan limit?\n2. How do I repay?\n3. What happens if I delay?\n00. Main Menu";
+  }
   return "Please choose an option: 0, 1, 2, or 3.";
 }
 
