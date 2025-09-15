@@ -26,6 +26,7 @@
   font-size: 14px;
   line-height: 1.4;
   clear: both;
+  white-space: pre-line;
 }
 
 .bot {
@@ -202,9 +203,9 @@
       Choose an option below:<br/>
       0. Why is my limit 0?<br/>
       1. How can I increase my loan limit?<br/>
-      2. How do I repay?<br/>
+      2. How do I repay my loan?<br/>
       3. What happens if I delay?<br/>
-      00. Main menu<br/>
+     00. Main menu<br/>
     </div>
   </div>
 
@@ -263,6 +264,9 @@ function botReply(q){
   }
   if(s === "00"){
     return "Main Menu:\n0. Why is my limit 0?\n1. How can I increase my loan limit?\n2. How do I repay?\n3. What happens if I delay?\n00. Main Menu";
+  }
+  if(s === "00"){
+    return "Choose an option below:\n0. Why is my limit 0?\n1. How can I increase my loan limit?\n2. How do I repay my loan?\n3. What happens if I delay?\n00. Main menu";
   }
   return "Please choose an option: 0, 1, 2, or 3.";
 }
