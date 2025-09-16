@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>CRM Mockup — Taasi Pochi</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f6f8;
+}
+.navbar {
+  display: flex;
+  background: #073b26;
+  color: white;
+  padding: 12px 20px;
+  gap: 20px;
+}
+.navbar div {
+  cursor: pointer;
+  font-weight: bold;
+}
+.navbar div:hover {
+  text-decoration: underline;
+}
+.main {
+  display: flex;
+  height: calc(100vh - 48px);
+}
+.sidebar {
+  width: 240px;
+  background: #fff;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+}
+.sidebar h3 {
+  padding: 12px;
+  margin: 0;
+  background: #f0f0f0;
+  border-bottom: 1px solid #ddd;
+}
+.sidebar .list {
+  padding: 10px;
+}
+.sidebar .list div {
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+.sidebar .list div:hover {
+  background: #f9f9f9;
+}
+.content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+.ticket {
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.chat-fab {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #0fa95a;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+.chat-label {
+  position: absolute;
+  right: 28px;
+  bottom: 92px;
+  background: #0fa95a;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+.chat-window {
+  position: absolute;
+  right: 20px;
+  bottom: 100px;
+  width: 360px;
+  height: 500px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  display: none;
+  flex-direction: column;
+}
+.chat-window .header {
+  background: #0fa95a;
+  color: white;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+}
+.chat-window .body {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  background: #f8fff6;
+}
+.msg {
+  max-width: 70%;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  clear: both;
+}
+.msg.bot {
+  background: #e0f8ec;
+  color: #073b26;
+  float: left;
+}
+.msg.user {
+  background: #ffffff;
+  color: #000;
+  float: right;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.chat-window .input {
+  display: flex;
+  padding: 8px;
+  border-top: 1px solid #eee;
+}
+.chat-window input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+.chat-window button {
+  background: #0fa95a;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  margin-left: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+  <div onclick="showCustomers()">Customers</div>
+  <div onclick="showReports()">Reports</div>
+</div>
+
+<!-- Layout -->
+<div class="main">
+  <div class="sidebar">
+    <h3>Customers</h3>
+    <div class="list" id="customerList">
+      <!-- Filled dynamically -->
+    </div>
+  </div>
+  <div class="content" id="contentArea">
+    <p>Select a tab above to view content.</p>
+  </div>
+</div>
+
+<!-- Chatbot -->
+<div class="chat-label">LendiBot</div>
+<div class="chat-fab" id="chatFab">💬</div>
+
+<div class="chat-window" id="chatWindow">
+  <div class="header">
+    <span>LendiBot Assistant</span>
+    <span id="closeChat" style="cursor:pointer">✕</span>
+  </div>
+  <div class="body" id="chatBody"></div>
+  <div class="input">
+    <input id="chatInput" placeholder="Type option..."/>
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+<script>
+const customers = Array.from({length:20}, (_,i)=>({
+  id: "Customer #"+String(i+1).padStart(3,'0'),
+  tickets: []
+}));
+
+// Predefined ticket pool
+const ticketPool = [
+  "Why is my limit 0?",
+  "Request for loan limit increase",
+  "Payment not received by merchant",
+  "Repayment failed but customer claims sufficient balance",
+  "Loan not reflecting in account",
+  "Dispute on transaction charges",
+  "Unable to access statements",
+  "Request for early repayment option"
+];
+
+// Fill tickets
+customers.forEach(c=>{
+  const numTickets = Math.floor(Math.random()*4)+2; // 2–5 tickets
+  while(c.tickets.length<numTickets){
+    const t = ticketPool[Math.floor(Math.random()*ticketPool.length)];
+    if(!c.tickets.includes(t)) c.tickets.push(t);
+  }
+});
+
+// Responses mapping
+const botResponses = {
+  "Why is my limit 0?": "Your limit is 0 because your activity is low or account is new. Keep using and repaying to build a score.",
+  "Request for loan limit increase": "To increase your loan limit, repay on time and use your wallet actively.",
+  "Payment not received by merchant": "Check if the merchant till is active. If deducted but not received, escalate for reversal.",
+  "Repayment failed but customer claims sufficient balance": "This may be due to arrears or delay. Confirm balance and retry after some time.",
+  "Loan not reflecting in account": "Disbursement can delay. Confirm via M-PESA SMS or system logs.",
+  "Dispute on transaction charges": "Verify transaction details. If incorrect charges, escalate to billing.",
+  "Unable to access statements": "System might be delayed. Retry later or escalate to technical team.",
+  "Request for early repayment option": "Currently early repayment may not be supported. Advise customer to wait for due date."
+};
+
+// Populate customer list when tab clicked
+function showCustomers(){
+  const list = document.getElementById("customerList");
+  list.innerHTML = "";
+  customers.forEach(c=>{
+    const div = document.createElement("div");
+    div.textContent = c.id;
+    div.onclick = ()=>showCustomerTickets(c);
+    list.appendChild(div);
+  });
+  document.getElementById("contentArea").innerHTML="<p>Select a customer to view tickets.</p>";
+}
+
+function showReports(){
+  document.getElementById("contentArea").innerHTML="<h3>No records</h3>";
+}
+
+// Show tickets for a customer
+let currentCustomer = null;
+function showCustomerTickets(customer){
+  currentCustomer = customer;
+  let html = `<h3>${customer.id} — Tickets</h3>`;
+  customer.tickets.forEach((t,i)=>{
+    html+=`<div class="ticket">${i+1}. ${t}</div>`;
+  });
+  document.getElementById("contentArea").innerHTML=html;
+}
+
+// Chat logic
+const fab=document.getElementById("chatFab");
+const win=document.getElementById("chatWindow");
+const closeBtn=document.getElementById("closeChat");
+const chatBody=document.getElementById("chatBody");
+const input=document.getElementById("chatInput");
+const sendBtn=document.getElementById("sendBtn");
+
+fab.onclick=()=>{ win.style.display="flex"; chatBody.innerHTML=""; 
+  if(!currentCustomer){
+    append("Hi agent, please open customer tickets to proceed.","bot");
+  } else {
+    append("Hello, here are this customer's tickets. Select an option:","bot");
+    currentCustomer.tickets.forEach((t,i)=>{
+      append((i+1)+". "+t,"bot");
+    });
+  }
+};
+closeBtn.onclick=()=>{ win.style.display="none"; };
+
+function append(text,who){
+  const el=document.createElement("div");
+  el.className="msg "+(who==="bot"?"bot":"user");
+  el.textContent=text;
+  chatBody.appendChild(el);
+  chatBody.scrollTop=chatBody.scrollHeight;
+}
+
+function handleReply(v){
+  if(!currentCustomer){
+    append("Please open a customer to proceed.","bot");
+    return;
+  }
+  const index=parseInt(v)-1;
+  if(currentCustomer.tickets[index]){
+    const ticket=currentCustomer.tickets[index];
+    append(botResponses[ticket] || "No response mapped.","bot");
+  } else {
+    append("Invalid option. Try again.","bot");
+  }
+}
+
+sendBtn.onclick=()=>{
+  const v=input.value.trim(); if(!v) return;
+  append(v,"user"); input.value="";
+  setTimeout(()=>handleReply(v),600);
+};
+input.onkeydown=(e)=>{ if(e.key==="Enter") sendBtn.click(); };
+</script>
+</body>
+</html>
