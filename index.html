@@ -205,6 +205,7 @@
       1. How can I increase my loan limit?<br/>
       2. How do I repay my loan?<br/>
       3. What happens if I delay?<br/>
+      4. Daily tip?
      00. Main menu<br/>
     </div>
   </div>
@@ -240,6 +241,14 @@ const sendBtn = document.getElementById('sendBtn');
 fab.addEventListener('click',()=>{ win.style.display='flex'; win.setAttribute('aria-hidden','false'); input.focus(); });
 closeBtn.addEventListener('click',()=>{ win.style.display='none'; win.setAttribute('aria-hidden','true'); });
 
+const dailyTips = [
+  "Tip: Repaying early increases your loan limit and builds your credit profile.",
+  "Tip: Even small repayments reduce your loan balance and keep your limit active.",
+  "Tip: More Pochi activity means higher chances of a bigger loan limit.",
+  "Tip: Avoid delays — late repayment can reduce your future loan eligibility."
+];
+let tipIndex = 0;
+
 function append(text, who='bot'){
   const el = document.createElement('div');
   el.className = 'msg ' + (who==='bot'?'bot':'user');
@@ -260,15 +269,17 @@ function botReply(q){
     return "Repayment is automatic from your Pochi wallet when funds are available, but you can also repay manually via the loans menu.";
   }
   if(s === "3"){
-    return "If you delay repayment, your access to future loans may be reduced, and penalties may apply. Early repayment builds your limit.";
+    return "If you delay repayment, your access to future loans may be reduced, and extra charges may apply. Repaying early boosts your next limit and unlocks faster access.";
+  }
+  if(s === "4"){
+     const tip = dailyTips[tipIndex];
+    tipIndex = (tipIndex + 1) % dailyTips.length; // rotate tips
+    return tip;
   }
   if(s === "00"){
-    return "Main Menu:\n0. Why is my limit 0?\n1. How can I increase my loan limit?\n2. How do I repay?\n3. What happens if I delay?\n00. Main Menu";
+    return "Choose an option below:\n0. Why is my limit 0?\n1. How can I increase my loan limit?\n2. How do I repay my loan?\n3. What happens if I delay?\n4. Daily tip?\n00. Main menu";
   }
-  if(s === "00"){
-    return "Choose an option below:\n0. Why is my limit 0?\n1. How can I increase my loan limit?\n2. How do I repay my loan?\n3. What happens if I delay?\n00. Main menu";
-  }
-  return "Invalid choice.Choose an option below:\n0. Why is my limit 0?\n1. How can I increase my loan limit?\n2. How do I repay my loan?\n3. What happens if I delay?\n00. Main menu.";
+  return "Invalid choice.Choose an option below:\n0. Why is my limit 0?\n1. How can I increase my loan limit?\n2. How do I repay my loan?\n3. What happens if I delay?\n4. Daily tip?\n00. Main menu.";
 }
 
 
