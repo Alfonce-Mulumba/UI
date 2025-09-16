@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>USSD Mockup — Taasi Loans</title>
+<style>
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #f5f6f8;
+  font-family: Arial, sans-serif;
+}
+.phone {
+  width: 270px;
+  height: 520px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  border: 2px solid #ccc;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  position: relative;
+}
+.screen {
+  background: #fff;
+  padding: 14px;
+  height: 70%;
+  border-radius: 10px;
+  color: #000;
+  font-size: 14px;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  /* vertical center */
+  align-items: left;      /* horizontal center */
+  text-align: left;
+}
+
+.line {
+  margin-bottom: 8px;
+  white-space: pre;
+}
+.input-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+button {
+  padding: 8px 12px;
+  background: #0fa95a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* SMS-like popup */
+.popup {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  background: #f1f0f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  padding: 10px 14px;
+  font-size: 13px;
+  display: none;
+  max-width: 260px;
+  animation: slideIn 2s forwards;
+}
+
+@keyframes slideIn {
+  from { top: -260px; opacity: 0; }
+  to { top: 2px; opacity: 1; }
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="screen" id="ussd"></div>
+  <div class="popup" id="popup"></div>
+</div>
+
+<script>
+let currentMenu = "main"; // Track menu state
+
+function showPopup(msg){
+  const pop=document.getElementById("popup");
+  pop.textContent=msg;
+  pop.style.display="block";
+  pop.style.animation="slideIn 0.5s forwards";
+  setTimeout(()=>{ pop.style.display="none"; },5000);
+}
+
+function renderMainMenu(){
+  currentMenu="main";
+  document.getElementById("ussd").innerHTML =
+    "<div class='line'><b>Your limit is Ksh. 0</b></div>"+
+    "<div class='line'>Please select menu:</div>"+
+    "<div class='line'>1. Ask LendiBot?</div>"+
+    "<div class='line'>0. Exit</div>"+
+    "<div class='input-row'>"+
+      "<input id='ussdInput' placeholder='Reply...'/>"+
+      "<button onclick='ussdReply()'>Send</button>"+
+    "</div>";
+  document.getElementById("ussdInput").focus();
+}
+
+function renderSubMenu(){
+  currentMenu="submenu";
+  document.getElementById("ussd").innerHTML =
+    "<div class='line'><b>Choose an option:</b></div>"+
+    "<div class='line'>1. Why is my limit 0?</div>"+
+    "<div class='line'>2. How can I increase my loan limit?</div>"+
+    "<div class='line'>3. How do I repay my loan?</div>"+
+    "<div class='line'>4. What happens if I delay?</div>"+
+    "<div class='line'>00. Main Menu</div>"+
+    "<div class='input-row'>"+
+      "<input id='ussdInput' placeholder='Reply...'/>"+
+      "<button onclick='ussdReply()'>Send</button>"+
+    "</div>";
+  document.getElementById("ussdInput").focus();
+}
+
+function ussdReply(){
+  const inputEl=document.getElementById("ussdInput");
+  if(!inputEl) return;
+  const v=inputEl.value.trim();
+  let reply="";
+
+  if(currentMenu==="main"){
+    if(v==="1"){ renderSubMenu(); return; }
+    else if(v==="0"){ reply="You have exited."; renderMainMenu(); }
+    else { reply="Invalid input. Try again."; }
+  }
+  else if(currentMenu==="submenu"){
+    if(v==="1"){
+      reply="Your limit is 0 because your Pochi activity is low or your account is new. Keep using it actively and repaying to build a score.";
+    }
+    else if(v==="2"){
+      reply="To increase your loan limit, repay on time, keep receiving payments on Pochi, and maintain regular activity.";
+    }
+    else if(v==="3"){
+      reply="Repayments are auto-deducted from your Pochi wallet or can be made manually.";
+    }
+    else if(v==="4"){
+      reply="Delays may reduce your future loan limit. Repaying early builds your score.";
+    }
+    else if(v==="00"){ renderMainMenu(); return; }
+    else { reply="Invalid input. Try again."; }
+  }
+
+  if(reply) showPopup(reply);
+  inputEl.value="";
+}
+renderMainMenu();
+</script>
+</body>
+</html>
