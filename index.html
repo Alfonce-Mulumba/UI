@@ -223,7 +223,7 @@
 const MOCK_DATA = {
   limit: 0,
   balance: 0,
-  period: '7 Days'
+  period: '30 Days'
 };
 
 document.getElementById('limitAmount').textContent = 'Ksh ' + MOCK_DATA.limit.toLocaleString();
@@ -286,7 +286,7 @@ function botReply(q){
 sendBtn.addEventListener('click',()=>{
   const v = input.value.trim(); if(!v) return;
   append(v,'user'); input.value='';
-  setTimeout(()=>{ append(botReply(v),'bot'); },600);
+  setTimeout(()=>{ append(botReply(v),'bot'); },2000);
 });
 input.addEventListener('keydown',(e)=>{ if(e.key==='Enter') sendBtn.click(); });
 

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>LendiBot Data Flow Simulation</title>
+<style>
+  .spinner {
+  border: 2px solid #12ec0a;  /* light grey */
+  border-top: 2px solid #f1f4f1; /* green for active */
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  animation: spin 2s linear infinite;
+  margin: auto;
+  display: none;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+body { font-family: Arial, sans-serif; padding: 20px; background:#f5f6f8; }
+h2 { color:#073b26; }
+.box { background:#fff; padding:14px; margin:12px 0; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+button { background:#0fa95a; color:#fff; padding:8px 14px; border:none; border-radius:6px; cursor:pointer; margin-right:8px; }
+.flow { display:flex; gap:16px; margin-top:20px; }
+.step { flex:1; padding:10px; border-radius:8px; text-align:center; background:#e0f8ec; position:relative; }
+.arrow { font-size:20px; margin:0 6px; align-self:center; }
+.log { background:#fff; padding:8px; border-radius:6px; margin:6px 0; font-size:13px; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+.bot { background:#d1f0ff; padding:10px; border-radius:10px; margin-top:10px; font-size:14px; }
+</style>
+</head>
+<body>
+
+<h2>LendiBot — Why is my limit 0?</h2>
+
+<div class="box">
+  <b>Select a customer:</b><br>
+  <button onclick="simulate('A')">Customer A</button>
+  <button onclick="simulate('B')">Customer B</button>
+  <button onclick="simulate('C')">Customer C</button>
+</div>
+
+<div id="flow" class="flow">
+  <div class="step" id="frontend"><b>Frontend</b><div id="frontendLog"></div></div>
+  <div class="spinner" id="spinner1"></div>
+  <div class="step" id="middleware"><b>Middleware (Bot)</b><div id="middlewareLog"></div></div>
+  <div class="spinner" id="spinner2"></div>
+  <div class="step" id="gateway"><b>API Gateway</b><div id="gatewayLog"></div></div>
+  <div class="spinner" id="spinner3"></div>
+  <div class="step" id="db"><b>Wallet DB</b><div id="dbLog"></div></div>
+</div>
+
+<div id="response" style="margin-top:20px;"></div>
+
+<script>
+const customers = {
+  "A": { avgReceived:15000, inactivity:10, avgBalance:5000, txnCount:200, walletAge:6 },
+  "B": { avgReceived:50000, inactivity:20, avgBalance:10000, txnCount:300, walletAge:12 },
+  "C": { avgReceived:30000, inactivity:5, avgBalance:1000, txnCount:150, walletAge:2 }
+};
+function startLoading(id){
+  document.getElementById(id).style.display = "block";
+}
+
+function stopLoading(id){
+  document.getElementById(id).style.display = "none";
+}
+
+function clearLogs(){
+  ["frontendLog","middlewareLog","gatewayLog","dbLog","response"].forEach(id=>{
+    document.getElementById(id).innerHTML="";
+  });
+}
+
+function simulate(cust){
+  clearLogs();
+  const c = customers[cust];
+
+  // Step 1: Frontend query after 1s
+  setTimeout(()=>{
+    document.getElementById("frontendLog").innerHTML += `<div class='log'>User asked: Why is my limit 0?</div>`;
+  },1000);
+
+  // Step 2: Spinner 1 → Middleware
+  setTimeout(()=>{
+    startLoading("spinner1");
+    setTimeout(()=>{
+      stopLoading("spinner1");
+      document.getElementById("middlewareLog").innerHTML += `<div class='log'>Bot maps query → needs: avgReceived, inactivity, avgBalance, txnCount, walletAge</div>`;
+    },2000);
+  },1500);
+
+  // Step 3: Spinner 2 → API Gateway
+  setTimeout(()=>{
+    startLoading("spinner2");
+    setTimeout(()=>{
+      stopLoading("spinner2");
+      document.getElementById("gatewayLog").innerHTML += `<div class='log'>API Gateway receives request → validates whitelist</div>`;
+    },2000);
+  },4000);
+
+  // Step 4: Spinner 3 → DB + Rules
+  setTimeout(()=>{
+    startLoading("spinner3");
+
+    // DB log first
+    setTimeout(()=>{
+      document.getElementById("dbLog").innerHTML += `<div class='log'>DB fetched values:<br>
+        AvgReceived=${c.avgReceived}<br>
+        Inactivity=${c.inactivity}<br>
+        AvgBalance=${c.avgBalance}<br>
+        TxnCount=${c.txnCount}<br>
+        WalletAge=${c.walletAge}m</div>`;
+    },1500);
+
+    // Rules triggered after DB
+    setTimeout(()=>{
+      let triggered=[];
+      if(c.avgReceived<20000) triggered.push("Low avg received");
+      if(c.inactivity>14) triggered.push("Inactive >14d");
+      if(c.avgBalance<2000) triggered.push("Low avg balance");
+      if(c.txnCount<180) triggered.push("Few transactions");
+      if(c.walletAge<3) triggered.push("Wallet too new");
+
+      document.getElementById("gatewayLog").innerHTML += `<div class='log'>Rules triggered: ${triggered.join(", ")}</div>`;
+
+      // stop spinner 3 after rules
+      stopLoading("spinner3");
+    },3000);
+
+  },6500);
+
+  // Step 5: Final LendiBot response
+  setTimeout(()=>{
+    let msg="";
+    if(cust==="A") msg="Your limit is 0 because you receive low amounts monthly. Grow your transactions to qualify.";
+    if(cust==="B") msg="Your limit is 0 because your wallet has been inactive for some time. Keep it active to build trust.";
+    if(cust==="C") msg="Your limit is 0 because your wallet is still new and balances are low. Build history for eligibility.";
+
+    document.getElementById("response").innerHTML = `<div class='bot'><b>LendiBot:</b> ${msg}</div>`;
+  },10000);
+}
+
+</script>
+</body>
+</html>
